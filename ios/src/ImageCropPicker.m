@@ -554,26 +554,28 @@ RCT_EXPORT_METHOD(openCropper:(NSDictionary *)options
                              @autoreleasepool {
                                  UIImage *imgT = [UIImage imageWithData:imageData];
 
-                                 NSNumber *compressQuality = [self.options valueForKey:@"compressImageQuality"];
-                                 Boolean isLossless = (compressQuality == nil || [compressQuality floatValue] == 1);
-
-                                 NSNumber *maxWidth = [self.options valueForKey:@"compressImageMaxWidth"];
-                                 Boolean useOriginalWidth = (maxWidth == nil || [maxWidth integerValue] >= imgT.size.width);
-
-                                 NSNumber *maxHeight = [self.options valueForKey:@"compressImageMaxHeight"];
-                                 Boolean useOriginalHeight = (maxHeight == nil || [maxHeight integerValue] >= imgT.size.height);
-
+//                                 NSNumber *compressQuality = [self.options valueForKey:@"compressImageQuality"];
+//                                 Boolean isLossless = (compressQuality == nil || [compressQuality floatValue] == 1);
+//
+//                                 NSNumber *maxWidth = [self.options valueForKey:@"compressImageMaxWidth"];
+//                                 Boolean useOriginalWidth = (maxWidth == nil || [maxWidth integerValue] >= imgT.size.width);
+//
+//                                 NSNumber *maxHeight = [self.options valueForKey:@"compressImageMaxHeight"];
+//                                 Boolean useOriginalHeight = (maxHeight == nil || [maxHeight integerValue] >= imgT.size.height);
+//
                                  ImageResult *imageResult = [[ImageResult alloc] init];
-                                 if (isLossless && useOriginalWidth && useOriginalHeight) {
-                                     // Use original, unmodified image
-                                     imageResult.data = imageData;
-                                     imageResult.width = @(imgT.size.width);
-                                     imageResult.height = @(imgT.size.height);
-                                     imageResult.mime = [self determineMimeTypeFromImageData:imageData];
-                                     imageResult.image = imgT;
-                                 } else {
-                                     imageResult = [self.compression compressImage:[imgT fixOrientation] withOptions:self.options];
-                                 }
+//                                 if (isLossless && useOriginalWidth && useOriginalHeight) {
+//                                     // Use original, unmodified image
+//                                     imageResult.data = imageData;
+//                                     imageResult.width = @(imgT.size.width);
+//                                     imageResult.height = @(imgT.size.height);
+//                                     imageResult.mime = [self determineMimeTypeFromImageData:imageData];
+//                                     imageResult.image = imgT;
+//                                 } else {
+//                                     imageResult = [self.compression compressImage:[imgT fixOrientation] withOptions:self.options];
+//                                 }
+                                 
+                                 imageResult = [self.compression compressImage:[imgT fixOrientation] withOptions:self.options];
 
                                  NSString *filePath = @"";
                                  if([[self.options objectForKey:@"writeTempFile"] boolValue]) {
@@ -708,7 +710,7 @@ RCT_EXPORT_METHOD(openCropper:(NSDictionary *)options
 
         [self startCropping:image];
     } else {
-        ImageResult *imageResult = [self.compression compressImage:image withOptions:self.options];
+        ImageResult *imageResult = [self.compression compressImage:[image fixOrientation] withOptions:self.options];
         NSString *filePath = [self persistFile:imageResult.data];
         if (filePath == nil) {
             [viewController dismissViewControllerAnimated:YES completion:[self waitAnimationEnd:^{
